@@ -18,7 +18,7 @@ COPY static static
 COPY .env .env
 COPY run_streamlit.py run_streamlit.py
 COPY src src
-COPY sites sites
+# COPY sites sites
 COPY auth.yaml auth.yaml
 
 EXPOSE 8567

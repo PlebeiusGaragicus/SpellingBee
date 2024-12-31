@@ -17,13 +17,21 @@ def choose_word():
     st.session_state.failed_attempts = 0
     st.session_state.given_up = False
 
+    # Check if a word list is selected
+    if not st.session_state.get("selected_wordlist_id"):
+        st.info("Please select a word list from the Word Lists page")
+        st.stop()
+
     # query for problems with this problem set id
     db = get_db()
-    problems = list(db["problem"].find({"problem_set_id": str(st.session_state.practice_set["_id"])}))
-    # random_word = random.choice(problems)
+    problems = list(db["problem"].find({"problem_set_id": st.session_state.selected_wordlist_id}))
+    
+    if not problems:
+        st.info("This word list has no words yet. Add some words to the list first!")
+        st.stop()
 
     # find a word that hasn't been attempted yet
-    # attempted_words = [attempt['problem_id'] for attempt in db["attempts"].find({"user_id": st.session_state.user_id_str})]
+    # attempted_words = [attempt['word_id'] for attempt in db["attempts"].find({"user_id": st.session_state.user_id_str})]
     # st.write(attempted_words)
 
     # unattempted_words = [problem for problem in problems if problem['_id'] not in attempted_words]
@@ -38,7 +46,7 @@ def choose_word():
 
     problems_with_accuracy = []
     for problem in problems:
-        attempts = list(db["attempts"].find({"problem_id": problem['_id']}))
+        attempts = list(db["attempts"].find({"word_id": problem['_id']}))
         accuracy = sum(attempt['was_correct'] for attempt in attempts) / len(attempts) if attempts else 0
         problems_with_accuracy.append((problem, accuracy))
 
@@ -105,7 +113,7 @@ def select_a_set():
 
 def show_attempts():
     db = get_db()
-    attempts = list(db["attempts"].find({"user_id": st.session_state.user_id_str, "problem_id": st.session_state.chosen_word_id}))
+    attempts = list(db["attempts"].find({"user_id": st.session_state.user_id_str, "word_id": st.session_state.chosen_word_id}))
     # st.write(attempts)
 
     accuracy = sum([attempt['was_correct'] for attempt in attempts]) / len(attempts) if len(attempts) > 0 else 0
@@ -119,7 +127,7 @@ def change_score(correct):
 
     db = get_db()
     attempt = UserAttempt(user_id=st.session_state.user_id_str,
-                            problem_id=st.session_state.chosen_word_id,
+                            word_id=st.session_state.chosen_word_id,
                             was_correct=correct)
 
     db['attempts'].insert_one(attempt.model_dump())

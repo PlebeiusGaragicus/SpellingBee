@@ -6,14 +6,30 @@ import streamlit as st
 
 from enum import Enum
 
+from src.pages import Pages
 
-from sites.progress_report import page as progress_report_page
-from sites.practice import page as practice_page
 
-from sites.study_collections import page as study_collections_page
-from sites.collection_edit import page as collection_edit_page
+# from src.progress_report import page as progress_report_page
+# from src.practice import page as practice_page
 
-from sites.root import page as root_page
+# from src.study_collections import page as study_collections_page
+# from src.collection_edit import page as collection_edit_page
+
+# from src.root import page as root_page
+
+
+
+# class Pages(Enum):
+
+#     PRACTICE = ("🧠 :rainbow[Practice]", practice_page, False)
+
+#     STUDY_COLLECTIONS = ("📚 :green[Study Collections]", study_collections_page, True)
+#     COLLECTION_EDIT = ("📝 :blue[Edit a Collection]", collection_edit_page, True)
+
+#     PROGRESS_REPORT = ("📈 :violet[Progress Report]", progress_report_page, True)
+
+#     ROOT_PANEL = ("🔒 :red[Root panel]", root_page, True)
+
 
 
 
@@ -56,19 +72,6 @@ def log_rerun():
 
 
 
-class Pages(Enum):
-
-    PRACTICE = ("🧠 :rainbow[Practice]", practice_page, False)
-
-    STUDY_COLLECTIONS = ("📚 :green[Study Collections]", study_collections_page, True)
-    COLLECTION_EDIT = ("📝 :blue[Edit a Collection]", collection_edit_page, True)
-
-    PROGRESS_REPORT = ("📈 :violet[Progress Report]", progress_report_page, True)
-
-    ROOT_PANEL = ("🔒 :red[Root panel]", root_page, True)
-
-
-
 
 
 def main_page():
@@ -80,7 +83,7 @@ def main_page():
 
 
     if "current_page" not in st.session_state:
-        st.session_state.current_page = Pages.STUDY_COLLECTIONS.value[0]
+        st.session_state.current_page = Pages.WORD_LISTS.value[0]
 
 
     def on_click(page):
