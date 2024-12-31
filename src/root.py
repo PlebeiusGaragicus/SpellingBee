@@ -5,8 +5,8 @@ from src.login import login
 
 def page():
     # if not login("root"):
-    if not login(need_root=True):
-        return
+    # if not login(need_root=True):
+    #     return
 
     st.header(f":red[ROOT PANEL]")
 

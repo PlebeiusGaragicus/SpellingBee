@@ -1,35 +1,12 @@
 import os
 import pathlib
+from src.login import login
+
 from PIL import Image
 
 import streamlit as st
 
-from enum import Enum
-
 from src.pages import Pages
-
-
-# from src.progress_report import page as progress_report_page
-# from src.practice import page as practice_page
-
-# from src.study_collections import page as study_collections_page
-# from src.collection_edit import page as collection_edit_page
-
-# from src.root import page as root_page
-
-
-
-# class Pages(Enum):
-
-#     PRACTICE = ("🧠 :rainbow[Practice]", practice_page, False)
-
-#     STUDY_COLLECTIONS = ("📚 :green[Study Collections]", study_collections_page, True)
-#     COLLECTION_EDIT = ("📝 :blue[Edit a Collection]", collection_edit_page, True)
-
-#     PROGRESS_REPORT = ("📈 :violet[Progress Report]", progress_report_page, True)
-
-#     ROOT_PANEL = ("🔒 :red[Root panel]", root_page, True)
-
 
 
 
@@ -78,6 +55,9 @@ def main_page():
 
     cmp_header()
 
+    if not login():
+        return
+
 
 
 
@@ -106,14 +86,12 @@ def main_page():
             p.value[1]()
             break
 
-    with st.sidebar:
-        # with st.popover(label="Debug", icon="🔧"):
-        st.header("", divider="rainbow")
-        with st.expander(label="Debug", icon="🔧"):
-            st.write(st.session_state)
+    if os.getenv("DEBUG"):
+        with st.sidebar:
+            st.header("", divider="rainbow")
+            with st.expander(label=":orange[Debug]", icon="🕷️"):
+                st.write(st.session_state)
 
-    # if os.getenv("DEBUG"):
-    #     with st.sidebar:
-    #         st.write(":orange[DEBUG]")
-    #         st.write( st.context.cookies )
-    #         st.write( st.context.headers )
+            with st.expander(label=":orange[Context]", icon="🍪"):
+                st.write( st.context.cookies )
+                st.write( st.context.headers )

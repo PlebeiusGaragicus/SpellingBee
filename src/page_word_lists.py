@@ -30,8 +30,8 @@ def show_progress_report():
             st.metric("Overall Accuracy", f"{accuracy * 100:.0f}%")
 
 def page():
-    if not login():
-        return
+    # if not login():
+    #     return
 
     
     # Show progress report at the top
@@ -54,7 +54,7 @@ def page():
             with cols[idx % 2]:
                 with st.container(border=True):
                     st.markdown(f"### 📝 {word_list['title']}")
-                    st.markdown(f"**Description:** {word_list['description']}")
+                    st.caption(word_list['description'])
 
                     col1, col2 = st.columns([3, 1])
                     with col1:

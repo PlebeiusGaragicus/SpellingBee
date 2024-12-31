@@ -10,8 +10,8 @@ from src.schema import WordList, SpellingWord
 
 
 def page():
-    if not login():
-        return
+    # if not login():
+    #     return
 
     st.header("📝 :rainbow[Edit Word List]", divider="rainbow")
     db = get_db()
@@ -47,8 +47,6 @@ def page():
         st.error("Selected word list not found!")
         return
 
-    # st.subheader(word_list['title'])
-    # st.caption(word_list['description'])
 
     # Add new word button and popover
     with st.popover("➕ Add New Word"):
