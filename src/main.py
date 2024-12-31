@@ -56,7 +56,6 @@ def cmp_header():
 
     # column_fix()
     # center_text("p", "🗣️🤖💬", size=60) # or h1, whichever
-    # st.sidebar.header("", divider="rainbow")
 
 
 
@@ -91,7 +90,11 @@ def main_page():
 
     with st.sidebar:
         for p in Pages:
-            if p.value[2]:
+            # root only
+            if p.value[3] and st.session_state.get("username", None) != "root":
+                continue
+
+            if p.value[2]: # visible
                 button_text = p.value[0]
                 if st.session_state.current_page == p.value[0]:
                     button_text = f"⭐️ **{button_text}** ⭐️"
@@ -104,11 +107,13 @@ def main_page():
             break
 
     with st.sidebar:
-        with st.popover("🔧"):
+        # with st.popover(label="Debug", icon="🔧"):
+        st.header("", divider="rainbow")
+        with st.expander(label="Debug", icon="🔧"):
             st.write(st.session_state)
 
-    if os.getenv("DEBUG"):
-        with st.sidebar:
-            st.write(":orange[DEBUG]")
-            st.write( st.context.cookies )
-            st.write( st.context.headers )
+    # if os.getenv("DEBUG"):
+    #     with st.sidebar:
+    #         st.write(":orange[DEBUG]")
+    #         st.write( st.context.cookies )
+    #         st.write( st.context.headers )

@@ -9,9 +9,10 @@ from src.root import page as root_page
 
 
 class Pages(Enum):
-    PRACTICE = ("🧠 :rainbow[Practice]", practice_page, False)
+    # (name, page, visible, root_only)
+    PRACTICE = ("🧠 :rainbow[Practice]", practice_page, False, False)
 
-    WORD_LISTS = ("📚 :green[Home Page]", word_lists_page, True)
-    COLLECTION_EDIT = ("📝 :blue[Word Lists]", collection_edit_page, True)
+    WORD_LISTS = ("📚 :green[Home Page]", word_lists_page, True, False)
+    COLLECTION_EDIT = ("📝 :blue[Word Lists]", collection_edit_page, True, False)
 
-    ROOT_PANEL = ("🔒 :red[Root panel]", root_page, True)
+    ROOT_PANEL = ("🔒 :red[Root panel]", root_page, True, True)

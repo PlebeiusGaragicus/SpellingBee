@@ -4,7 +4,8 @@ import time
 
 from src.database import get_db
 from src.login import login
-from src.schema import WordList, SpellingWord
+from src.schema import WordList
+from src.interface import centered_button_trick
 
 import src.sites as sites
 
@@ -32,7 +33,6 @@ def page():
     if not login():
         return
 
-    st.header("📚 :rainbow[Word Lists]", divider="rainbow")
     
     # Show progress report at the top
     show_progress_report()
@@ -42,38 +42,12 @@ def page():
     # Find all word lists that belong to the current user
     word_lists = list(db["wordlist"].find({"user_id": st.session_state.user_id_str}))
 
-    # Show a form to create a new word list
-    # with st.expander("🌱 :green[Create a new word list]"):
-    with st.popover("🌱 :green[Create a new word list]"):
-        with st.form(key="new_wordlist", clear_on_submit=True):
-            title = st.text_input("Title")
-            description = st.text_area("Description")
-            
-            if st.form_submit_button("Create Word List"):
-                # Check if word list with the same title already exists
-                existing_list = db["wordlist"].find_one({
-                    "user_id": st.session_state.user_id_str,
-                    "title": title
-                })
-                
-                if existing_list is not None:
-                    st.error("A word list with this title already exists")
-                elif title == "":
-                    st.error("Title must be filled")
-                else:
-                    new_list = WordList(
-                        user_id=st.session_state.user_id_str,
-                        title=title,
-                        description=description
-                    )
-                    db["wordlist"].insert_one(new_list.model_dump())
-                    st.success("Word list created successfully!")
-                    st.rerun()
-
     # Display existing word lists
     if not word_lists:
         st.info("You haven't created any word lists yet. Create one above to get started!")
     else:
+        st.header("📚 :rainbow[Word Lists]", divider="rainbow")
+
         # Create two columns for the cards
         cols = st.columns(2)
         for idx, word_list in enumerate(word_lists):
@@ -99,3 +73,30 @@ def page():
                                     db["wordlist"].delete_one({"_id": word_list['_id']})
                                     st.success("Word list deleted successfully!")
                                     st.rerun()
+
+    with centered_button_trick():
+        with st.popover(":green[Create a new word list]", icon="🌱", use_container_width=True):
+            with st.form(key="new_wordlist", clear_on_submit=True):
+                title = st.text_input("Title")
+                description = st.text_area("Description")
+                
+                if st.form_submit_button("Create Word List"):
+                    # Check if word list with the same title already exists
+                    existing_list = db["wordlist"].find_one({
+                        "user_id": st.session_state.user_id_str,
+                        "title": title
+                    })
+                    
+                    if existing_list is not None:
+                        st.error("A word list with this title already exists")
+                    elif title == "":
+                        st.error("Title must be filled")
+                    else:
+                        new_list = WordList(
+                            user_id=st.session_state.user_id_str,
+                            title=title,
+                            description=description
+                        )
+                        db["wordlist"].insert_one(new_list.model_dump())
+                        st.success("Word list created successfully!")
+                        st.rerun()

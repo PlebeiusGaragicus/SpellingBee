@@ -34,6 +34,7 @@ showErrorDetails = true
 # toolbarMode = "auto"
 # toolbarMode = "viewer"
 # toolbarMode = "minimal"
+toolbarMode = "minimal"
 
 
 
@@ -44,7 +45,9 @@ showErrorDetails = true
 base = "dark"
 
 # Primary accent color for interactive elements.
-primaryColor = "#FF7F50"
+# primaryColor = "#FF7F50"
+primaryColor = "#15A712"
+
 # TODO
 # https://htmlcolorcodes.com/colors/shades-of-orange/
 #FFAC1C
