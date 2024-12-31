@@ -1,8 +1,6 @@
 import os
-import json
 import time
 import random
-import subprocess
 
 import streamlit as st
 
@@ -76,7 +74,7 @@ def choose_word():
 
     st.session_state.chosen_word_id = str(random_problem['_id'])
     st.session_state.chosen_word = random_problem['word']
-    if random_problem['example_usage']:
+    if random_problem['usage']:
         st.session_state.speak_this = f"Spell: '{random_problem['word']}'.\n\n As in: {random_problem['example_usage']}"
     else:
         st.session_state.speak_this = f"Spell: '{random_problem['word']}'."

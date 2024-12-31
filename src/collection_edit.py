@@ -54,8 +54,7 @@ def page():
     with st.popover("➕ Add New Word"):
         with st.form(key="add_word", clear_on_submit=True):
             word = st.text_input("Word")
-            example = st.text_input("Example Usage (optional)")
-            notes = st.text_area("Notes (optional)")
+            usage = st.text_area("Example usage(optional)")
             
             if st.form_submit_button("Add Word"):
                 if not word:
@@ -66,8 +65,7 @@ def page():
                         "problem_type": "spelling",
                         "problem_set_id": st.session_state.selected_wordlist_id,
                         "word": word,
-                        "example_usage": example,
-                        "notes": notes
+                        "usage": usage,
                     }
                     db["problem"].insert_one(new_problem)
                     st.success("Word added successfully!")
@@ -92,10 +90,8 @@ def page():
                     
                 with cols[0]:
                     st.write(f"**{problem['word']}**")
-                    if problem.get('example_usage'):
-                        st.caption(f"{problem['example_usage']}")
-                    if problem.get('notes'):
-                        st.caption(f"_Notes: {problem['notes']}_")
+                    if problem.get('usage'):
+                        st.write(f"_Usage:_ {problem['usage']}")
 
                 with cols[1]:
                     attempts = list(db["attempts"].find({

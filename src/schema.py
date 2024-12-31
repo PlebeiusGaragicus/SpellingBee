@@ -1,6 +1,7 @@
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
+from typing import TypedDict
 
 # Spaced Repetition System
 
@@ -18,8 +19,7 @@ class UserAttempt(BaseModel):
 class SpellingWord(BaseModel):
     word_list_id: str = Field(...)
     word: str = Field(...)
-    example_usage: str = Field(...)
-    notes: Optional[str] = None
+    usage: str = Field(...)
 
 
 class WordList(BaseModel):

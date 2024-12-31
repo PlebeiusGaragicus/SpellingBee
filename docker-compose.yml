@@ -1,7 +1,7 @@
 services:
 
-  streamlit_template:
-    container_name: streamlit_template
+  spellingbee_streamlit:
+    container_name: SpellingBee
 
     build:
       context: .
@@ -14,7 +14,6 @@ services:
       # Map local files to the container for live updates (useful for development)
       # TODO: should this be removed for production?  Likely...
       - ./src:/app/src
-      # - ./sites:/app/sites
 
     environment:
       # Avoid output buffering; this line ensures that print() statements are sent directly to the terminal
