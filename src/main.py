@@ -4,13 +4,26 @@ from PIL import Image
 
 import streamlit as st
 
+from enum import Enum
+
+
+from sites.progress_report import page as progress_report_page
+from sites.practice import page as practice_page
+
+from sites.study_collections import page as study_collections_page
+from sites.collection_edit import page as collection_edit_page
+
+from sites.root import page as root_page
+
+
+
 from src.common import (
     cprint,
     Colors,
 )
 
 
-APP_NAME = "Template"
+APP_NAME = "Spelling Bee"
 STATIC_PATH = pathlib.Path(__file__).parent.parent / "static"
 
 
@@ -40,12 +53,56 @@ def log_rerun():
     cprint(f"RUNNING for: {ip_addr} - {lang} - {user_agent}", Colors.YELLOW)
 
 
+
+
+
+class Pages(Enum):
+
+    PRACTICE = ("🧠 :rainbow[Practice]", practice_page, False)
+
+    STUDY_COLLECTIONS = ("📚 :green[Study Collections]", study_collections_page, True)
+    COLLECTION_EDIT = ("📝 :blue[Edit a Collection]", collection_edit_page, True)
+
+    PROGRESS_REPORT = ("📈 :violet[Progress Report]", progress_report_page, True)
+
+    ROOT_PANEL = ("🔒 :red[Root panel]", root_page, True)
+
+
+
+
+
 def main_page():
     log_rerun()
 
     cmp_header()
 
-    st.write("hi")
+
+
+
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = Pages.STUDY_COLLECTIONS.value[0]
+
+
+    def on_click(page):
+        st.session_state.current_page = page
+
+    with st.sidebar:
+        for p in Pages:
+            if p.value[2]:
+                button_text = p.value[0]
+                if st.session_state.current_page == p.value[0]:
+                    button_text = f"⭐️ **{button_text}** ⭐️"
+                st.button(button_text, on_click=on_click, args=(p.value[0],), use_container_width=True)
+
+
+    for p in Pages:
+        if st.session_state.current_page == p.value[0]:
+            p.value[1]()
+            break
+
+    with st.sidebar:
+        with st.popover("🔧"):
+            st.write(st.session_state)
 
     if os.getenv("DEBUG"):
         with st.sidebar:

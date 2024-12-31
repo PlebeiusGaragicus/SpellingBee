@@ -1,2 +1,7 @@
 streamlit
-# python-dotenv
+streamlit_authenticator
+
+pydantic
+# pyttsx3
+gtts
+pymongo
