@@ -65,7 +65,7 @@ def page():
                         st.info("No words in this list yet.")
                     else:
                         for problem in problems:
-                            cols = st.columns([1, 1, 1])
+                            cols = st.columns([1, 1, 1, 1])
                             with cols[0]:
                                 # st.write(f"**{problem['word']}**")
                                 st.markdown(f"#### {problem['word']}")
@@ -80,15 +80,17 @@ def page():
                                 
                                 num_correct = sum([attempt['was_correct'] for attempt in attempts])
                                 num_attempts = len(attempts)
-                                accuracy = num_correct / num_attempts if num_attempts > 0 else 0
-                                
-                                color = "green" if accuracy > 0.8 else "red"
+
                                 with st.container(border=True):
-                                    st.metric(f"__Skill__: :{color}[{accuracy * 100:.0f}%]", f"{num_correct}/{num_attempts}")
-                                # st.metric("Attempts", f"{num_attempts}")
-                                # st.metric(f"Accuracy:{color}[{accuracy * 100:.0f}%]", accuracy)
+                                    st.metric(f":blue[__Attempts__]:", f"{num_correct}/{num_attempts}")
 
                             with cols[2]:
+                                accuracy = num_correct / num_attempts if num_attempts > 0 else 0
+                                color = "green" if accuracy > 0.8 else "red"
+                                with st.container(border=True):
+                                    st.metric(f":{color}[__Accuracy__]:", f"{accuracy * 100:.0f}%")
+
+                            with cols[3]:
                                 if st.session_state.username == "root":
                                     with st.popover("🗑️", use_container_width=True):
                                         st.error("Delete this word?")
