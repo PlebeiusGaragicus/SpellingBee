@@ -10,17 +10,14 @@ from src.schema import WordList, SpellingWord
 
 
 def page():
-    # if not login():
-    #     return
-
     st.header("📝 :rainbow[Edit Word List]", divider="rainbow")
     db = get_db()
 
-    # Get all word lists for this user
-    word_lists = list(db["wordlist"].find({"user_id": st.session_state.user_id_str}))
+    # Get all word lists
+    word_lists = list(db["wordlist"].find())
     
     if not word_lists:
-        st.info("You haven't created any word lists yet. Create one in the Word Lists page to get started!")
+        st.info("No word lists have been created yet. Create one in the Word Lists page to get started!")
         return
 
     # Create a dictionary mapping titles to IDs for the select box
@@ -48,26 +45,37 @@ def page():
         return
 
 
-    # Add new word button and popover
-    with st.popover("➕ Add New Word"):
-        with st.form(key="add_word", clear_on_submit=True):
-            word = st.text_input("Word")
-            usage = st.text_area("Example usage(optional)")
-            
-            if st.form_submit_button("Add Word"):
-                if not word:
-                    st.error("Word is required")
-                else:
-                    # Create new problem in the problems collection
-                    new_problem = {
-                        "problem_type": "spelling",
-                        "problem_set_id": st.session_state.selected_wordlist_id,
-                        "word": word,
-                        "usage": usage,
-                    }
-                    db["problem"].insert_one(new_problem)
-                    st.success("Word added successfully!")
-                    st.rerun()
+    # Add new word button and popover - only for root user
+    if st.session_state.username == "root":
+        with st.popover("➕ Add New Word"):
+            with st.form(key="add_word", clear_on_submit=True):
+                word = st.text_input("Word")
+                usage = st.text_area("Example usage(optional)")
+                
+                if st.form_submit_button("Add Word"):
+                    if not word:
+                        st.error("Word is required")
+                    else:
+                        # Check if word already exists in this list
+                        existing_word = db["problem"].find_one({
+                            "problem_set_id": st.session_state.selected_wordlist_id,
+                            "problem_type": "spelling",
+                            "word": word.strip()  # Compare with stripped word to avoid whitespace issues
+                        })
+                        
+                        if existing_word:
+                            st.error(f"'{word}' is already in this word list!")
+                        else:
+                            # Create new problem in the problems collection
+                            new_problem = {
+                                "problem_type": "spelling",
+                                "problem_set_id": st.session_state.selected_wordlist_id,
+                                "word": word.strip(),  # Store stripped word
+                                "usage": usage,
+                            }
+                            db["problem"].insert_one(new_problem)
+                            st.success("Word added successfully!")
+                            st.rerun()
 
     # Display existing words with stats
     st.subheader("Words in this List")

@@ -23,7 +23,6 @@ class SpellingWord(BaseModel):
 
 
 class WordList(BaseModel):
-    user_id: str = Field(...)
     title: str = Field(...)
     description: str = Field(...)
     words: List[SpellingWord] = Field(default_factory=list)

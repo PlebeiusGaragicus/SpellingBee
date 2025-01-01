@@ -39,12 +39,12 @@ def page():
     
     db = get_db()
 
-    # Find all word lists that belong to the current user
-    word_lists = list(db["wordlist"].find({"user_id": st.session_state.user_id_str}))
+    # Find all word lists
+    word_lists = list(db["wordlist"].find())
 
     # Display existing word lists
     if not word_lists:
-        st.info("You haven't created any word lists yet. Create one above to get started!")
+        st.info("No word lists have been created yet. Create one above to get started!")
     else:
         st.header("📚 :rainbow[Word Lists]", divider="rainbow")
 
@@ -75,28 +75,28 @@ def page():
                                     st.rerun()
 
     with centered_button_trick():
-        with st.popover(":green[Create a new word list]", icon="🌱", use_container_width=True):
-            with st.form(key="new_wordlist", clear_on_submit=True):
-                title = st.text_input("Title")
-                description = st.text_area("Description")
-                
-                if st.form_submit_button("Create Word List"):
-                    # Check if word list with the same title already exists
-                    existing_list = db["wordlist"].find_one({
-                        "user_id": st.session_state.user_id_str,
-                        "title": title
-                    })
+        # Only show create button for root user
+        if st.session_state.username == "root":
+            with st.popover(":green[Create a new word list]", icon="🌱", use_container_width=True):
+                with st.form(key="new_wordlist", clear_on_submit=True):
+                    title = st.text_input("Title")
+                    description = st.text_area("Description")
                     
-                    if existing_list is not None:
-                        st.error("A word list with this title already exists")
-                    elif title == "":
-                        st.error("Title must be filled")
-                    else:
-                        new_list = WordList(
-                            user_id=st.session_state.user_id_str,
-                            title=title,
-                            description=description
-                        )
-                        db["wordlist"].insert_one(new_list.model_dump())
-                        st.success("Word list created successfully!")
-                        st.rerun()
+                    if st.form_submit_button("Create Word List"):
+                        # Check if word list with the same title already exists
+                        existing_list = db["wordlist"].find_one({
+                            "title": title
+                        })
+                        
+                        if existing_list is not None:
+                            st.error("A word list with this title already exists")
+                        elif title == "":
+                            st.error("Title must be filled")
+                        else:
+                            new_list = WordList(
+                                title=title,
+                                description=description
+                            )
+                            db["wordlist"].insert_one(new_list.model_dump())
+                            st.success("Word list created successfully!")
+                            st.rerun()

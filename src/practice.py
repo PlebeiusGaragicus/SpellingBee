@@ -28,25 +28,21 @@ def choose_word():
         st.info("This word list has no words yet. Add some words to the list first!")
         st.stop()
 
-    # find a word that hasn't been attempted yet
-    # attempted_words = [attempt['word_id'] for attempt in db["attempts"].find({"user_id": st.session_state.user_id_str})]
-    # st.write(attempted_words)
+    # Get all problem IDs
+    problem_ids = [str(problem['_id']) for problem in problems]
 
-    # unattempted_words = [problem for problem in problems if problem['_id'] not in attempted_words]
-    # st.write(unattempted_words)
-    # if unattempted_words != []:
-    #     random_word = random.choice(unattempted_words)
-
-    # else:
-
-    # Assuming 'problems' is a list of problem documents from a database
-    # and db["attempts"] is a collection where attempts are stored.
-
-    problems_with_accuracy = []
-    for problem in problems:
-        attempts = list(db["attempts"].find({"word_id": problem['_id']}))
-        accuracy = sum(attempt['was_correct'] for attempt in attempts) / len(attempts) if attempts else 0
-        problems_with_accuracy.append((problem, accuracy))
+    # Use aggregation pipeline to efficiently calculate accuracies
+    pipeline = [
+        {"$match": {"word_id": {"$in": problem_ids}}},
+        {"$group": {
+            "_id": "$word_id",
+            "accuracy": {"$avg": {"$cond": [{"$eq": ["$was_correct", True]}, 1, 0]}}
+        }}
+    ]
+    accuracies = {str(result['_id']): result['accuracy'] for result in db["attempts"].aggregate(pipeline)}
+    
+    # Create problems with accuracy list, defaulting to 0 for words with no attempts
+    problems_with_accuracy = [(problem, accuracies.get(str(problem['_id']), 0)) for problem in problems]
 
     # Decide on the category only once per execution
     rand_choice = random.random()
