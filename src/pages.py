@@ -1,9 +1,7 @@
 from enum import Enum
 
 from src.practice import page as practice_page
-
-from src.page_word_lists import page as word_lists_page
-
+from src.word_lists_page import page as word_lists_page
 from src.root import page as root_page
 
 

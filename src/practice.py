@@ -85,10 +85,6 @@ def select_a_set():
     with st.container(border=True):
         db = get_db()
 
-        # user_id = db["users"].find_one({"name": st.session_state.username})["_id"]
-        # user_id_str = str(user_id)
-        # st.sidebar.write(f"User ID: '{user_id_str}'")
-
         problemsets = list(db["problemset"].find({"user_id": st.session_state.user_id_str}))
 
         # find problem sets of type "spelling"
@@ -144,8 +140,6 @@ def page():
 
     show_attempts()
 
-    # st.write(st.session_state.failed_attempts)
-
     ### GUESS SUBMISSION FORM
     with st.form(key='spell_test_form', clear_on_submit=True):
         guess = st.text_input('Type the word you hear:', key='word_input')
@@ -159,12 +153,11 @@ def page():
                         st.toast("Correct!")
                 choose_word()
                 st.balloons()
-                # st.success('Correct!')
                 time.sleep(1)
                 st.rerun()
 
-                # STUDENT GOT IT WRONG
             else:
+                # STUDENT GOT IT WRONG
                 st.session_state.failed_attempts += 1
 
                 change_score(False)
@@ -175,8 +168,7 @@ def page():
                     st.error('Try one more time!')
                 else:
                     st.markdown(f"# Sorry, the word was `{chosen_word()}`")
-                    # choose_word()
-                    # st.rerun()
+
 
     cols = st.columns([3, 1, 1, 1])
     give_up = st.empty()

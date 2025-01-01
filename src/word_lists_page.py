@@ -33,7 +33,6 @@ def page():
     # if not login():
     #     return
 
-    
     # Show progress report at the top
     show_progress_report()
     
