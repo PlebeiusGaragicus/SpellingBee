@@ -48,34 +48,99 @@ def page():
     else:
         st.header("📚 :rainbow[Word Lists]", divider="rainbow")
 
-        # Create two columns for the cards
-        cols = st.columns(2)
-        for idx, word_list in enumerate(word_lists):
-            with cols[idx % 2]:
-                with st.container(border=True):
-                    st.markdown(f"### 📝 {word_list['title']}")
-                    st.caption(word_list['description'])
+        for word_list in word_lists:
+            # Header row with title and buttons
+            with st.container(border=True):
+                col1, col2, col3 = st.columns([1, 1, 1])
 
-                    col1, col2 = st.columns([3, 1])
-                    with col1:
-                        if st.button("Practice!", key=f"practice_{word_list['_id']}", type="primary"):
-                            st.session_state.selected_wordlist_id = str(word_list['_id'])
-                            st.session_state.current_page = sites.PRACTICE
-                            st.session_state.chosen_word = None
-                            st.rerun()
-                    
-                    # Only show delete button for root user
-                    with col2:
-                        if st.session_state.username == "root":
-                            with st.popover(":red[Delete]", use_container_width=True):
-                                st.error("Are you sure you want to delete this word?")
-                                if st.button("🗑️ Delete", key=f"delete_{word_list['_id']}", type="secondary"):
-                                    db["wordlist"].delete_one({"_id": word_list['_id']})
-                                    st.success("Word list deleted successfully!")
-                                    st.rerun()
+                # Display words in an expander
+                with st.expander("View Words"):
+                    st.divider()
+                    problems = list(db["problem"].find({
+                        "problem_set_id": str(word_list['_id']),
+                        "problem_type": "spelling"
+                    }))
 
+                    if not problems:
+                        st.info("No words in this list yet.")
+                    else:
+                        for problem in problems:
+                            cols = st.columns([6, 2])
+                            with cols[0]:
+                                st.write(f"**{problem['word']}**")
+                                if problem.get('usage'):
+                                    st.write(f"_Usage:_ {problem['usage']}")
+                            
+                            with cols[1]:
+                                attempts = list(db["attempts"].find({
+                                    "user_id": st.session_state.user_id_str,
+                                    "word_id": str(problem['_id'])
+                                }))
+                                
+                                num_correct = sum([attempt['was_correct'] for attempt in attempts])
+                                num_attempts = len(attempts)
+                                accuracy = num_correct / num_attempts if num_attempts > 0 else 0
+                                
+                                color = "green" if accuracy > 0.8 else "red"
+                                st.write(f"Accuracy: :{color}[{accuracy * 100:.0f}%] ({num_correct}/{num_attempts})")
+
+            with col1:
+                # with st.container(border=True):
+                st.subheader(f"📝 {word_list['title']}")
+                st.caption(word_list['description'])
+
+            # with col3:
+                if st.button("Practice!", key=f"practice_{word_list['_id']}", type="primary", use_container_width=True):
+                    st.session_state.selected_wordlist_id = str(word_list['_id'])
+                    st.session_state.current_page = sites.PRACTICE
+                    st.session_state.chosen_word = None
+                    st.rerun()
+            
+            # Only show add/delete buttons for root user
+            with col3:
+                if st.session_state.username == "root":
+                    col3_1, col3_2 = st.columns(2)
+                    with col3_1:
+                        with st.popover("➕ Add Word"):
+                            with st.form(key=f"add_word_{word_list['_id']}", clear_on_submit=True):
+                                word = st.text_input("Word")
+                                usage = st.text_area("Example usage(optional)")
+                                
+                                if st.form_submit_button("Add Word"):
+                                    if not word:
+                                        st.error("Word is required")
+                                    else:
+                                        # Check if word already exists in this list
+                                        existing_word = db["problem"].find_one({
+                                            "problem_set_id": str(word_list['_id']),
+                                            "problem_type": "spelling",
+                                            "word": word.strip()
+                                        })
+                                        
+                                        if existing_word:
+                                            st.error(f"'{word}' is already in this word list!")
+                                        else:
+                                            new_problem = {
+                                                "problem_type": "spelling",
+                                                "problem_set_id": str(word_list['_id']),
+                                                "word": word.strip(),
+                                                "usage": usage,
+                                            }
+                                            db["problem"].insert_one(new_problem)
+                                            st.success("Word added successfully!")
+                                            st.rerun()
+                    with col3_2:
+                        with st.popover(":red[Delete]"):
+                            st.error("Are you sure you want to delete this word list?")
+                            if st.button("🗑️ Delete", key=f"delete_{word_list['_id']}", type="secondary"):
+                                db["wordlist"].delete_one({"_id": word_list['_id']})
+                                st.success("Word list deleted successfully!")
+                                st.rerun()
+            
+            # st.divider()
+
+    # Create new word list button (only for root)
     with centered_button_trick():
-        # Only show create button for root user
         if st.session_state.username == "root":
             with st.popover(":green[Create a new word list]", icon="🌱", use_container_width=True):
                 with st.form(key="new_wordlist", clear_on_submit=True):
