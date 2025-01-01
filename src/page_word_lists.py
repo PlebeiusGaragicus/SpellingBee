@@ -51,7 +51,7 @@ def page():
         for word_list in word_lists:
             # Header row with title and buttons
             with st.container(border=True):
-                col1, col2, col3 = st.columns([1, 1, 1])
+                col1, col3 = st.columns([1, 1])
 
                 # Display words in an expander
                 with st.expander("View Words"):
@@ -65,9 +65,10 @@ def page():
                         st.info("No words in this list yet.")
                     else:
                         for problem in problems:
-                            cols = st.columns([6, 2])
+                            cols = st.columns([1, 1, 1])
                             with cols[0]:
-                                st.write(f"**{problem['word']}**")
+                                # st.write(f"**{problem['word']}**")
+                                st.markdown(f"#### {problem['word']}")
                                 if problem.get('usage'):
                                     st.write(f"_Usage:_ {problem['usage']}")
                             
@@ -82,7 +83,23 @@ def page():
                                 accuracy = num_correct / num_attempts if num_attempts > 0 else 0
                                 
                                 color = "green" if accuracy > 0.8 else "red"
-                                st.write(f"Accuracy: :{color}[{accuracy * 100:.0f}%] ({num_correct}/{num_attempts})")
+                                with st.container(border=True):
+                                    st.metric(f"__Skill__: :{color}[{accuracy * 100:.0f}%]", f"{num_correct}/{num_attempts}")
+                                # st.metric("Attempts", f"{num_attempts}")
+                                # st.metric(f"Accuracy:{color}[{accuracy * 100:.0f}%]", accuracy)
+
+                            with cols[2]:
+                                if st.session_state.username == "root":
+                                    with st.popover("🗑️", use_container_width=True):
+                                        st.error("Delete this word?")
+                                        if st.button("Delete", key=f"delete_word_{problem['_id']}", use_container_width=True):
+                                            db["problem"].delete_one({"_id": problem["_id"]})
+                                            st.success("Word deleted!")
+                                            st.rerun()
+
+                            st.divider()
+
+
 
             with col1:
                 # with st.container(border=True):
@@ -90,7 +107,8 @@ def page():
                 st.caption(word_list['description'])
 
             # with col3:
-                if st.button("Practice!", key=f"practice_{word_list['_id']}", type="primary", use_container_width=True):
+                # if st.button("Practice!", key=f"practice_{word_list['_id']}", type="primary", use_container_width=True):
+                if st.button("Practice!", key=f"practice_{word_list['_id']}", type="primary"):
                     st.session_state.selected_wordlist_id = str(word_list['_id'])
                     st.session_state.current_page = sites.PRACTICE
                     st.session_state.chosen_word = None
@@ -101,7 +119,7 @@ def page():
                 if st.session_state.username == "root":
                     col3_1, col3_2 = st.columns(2)
                     with col3_1:
-                        with st.popover("➕ Add Word"):
+                        with st.popover(":green[Add Word]", icon="🌱", use_container_width=True):
                             with st.form(key=f"add_word_{word_list['_id']}", clear_on_submit=True):
                                 word = st.text_input("Word")
                                 usage = st.text_area("Example usage(optional)")
@@ -130,7 +148,7 @@ def page():
                                             st.success("Word added successfully!")
                                             st.rerun()
                     with col3_2:
-                        with st.popover(":red[Delete]"):
+                        with st.popover(":red[Delete List]", icon="🗑️", use_container_width=True):
                             st.error("Are you sure you want to delete this word list?")
                             if st.button("🗑️ Delete", key=f"delete_{word_list['_id']}", type="secondary"):
                                 db["wordlist"].delete_one({"_id": word_list['_id']})

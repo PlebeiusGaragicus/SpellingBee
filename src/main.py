@@ -8,6 +8,8 @@ import streamlit as st
 
 from src.pages import Pages
 
+from src.interface import hide_markdown_header_links
+
 
 
 from src.common import (
@@ -58,7 +60,7 @@ def main_page():
     if not login():
         return
 
-
+    hide_markdown_header_links()
 
 
     if "current_page" not in st.session_state:

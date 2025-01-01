@@ -40,3 +40,34 @@ def centered_button_trick():
         st.empty()
 
     return columns[1]
+
+
+# def hide_markdown_header_links():
+#     st.markdown("""
+# .css-m70y {display:none}
+# """, unsafe_allow_html=True)
+
+
+# def hide_anchor_link():
+def hide_markdown_header_links():
+    """
+    https://discuss.streamlit.io/t/hide-titles-link/19783/3
+    """
+
+        # <style>
+        # .css-15zrgzn {display: none}
+        # .css-eczf16 {display: none}
+        # .css-jn99sy {display: none}
+        # .st-emotion-cache-gi0tri {display: none}
+        # .e121c1cl3 {display: none}
+        # </style>
+    st.markdown("""
+        <style>
+        .stApp a:first-child {
+            display: none;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+
+# <span data-testid="stHeaderActionElements" class="st-emotion-cache-gi0tri e121c1cl3"><a href="#f3e94a7" class="st-emotion-cache-ubko3j e121c1cl1"><svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></span>
