@@ -44,7 +44,7 @@ def page():
 
     # Display existing word lists
     if not word_lists:
-        st.info("No word lists have been created yet. Create one above to get started!")
+        st.info("No word lists have been created yet.")
     else:
         st.header("📚 :rainbow[Word Lists]", divider="rainbow")
 

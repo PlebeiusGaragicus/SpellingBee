@@ -88,12 +88,13 @@ def main_page():
             p.value[1]()
             break
 
-    if os.getenv("DEBUG"):
-        with st.sidebar:
-            st.header("", divider="rainbow")
-            with st.expander(label=":orange[Debug]", icon="🕷️"):
-                st.write(st.session_state)
+    if st.session_state.username == "root":
+        if os.getenv("DEBUG"):
+            with st.sidebar:
+                st.header("", divider="rainbow")
+                with st.expander(label=":orange[Debug]", icon="🕷️"):
+                    st.write(st.session_state)
 
-            with st.expander(label=":orange[Context]", icon="🍪"):
-                st.write( st.context.cookies )
-                st.write( st.context.headers )
+                with st.expander(label=":orange[Context]", icon="🍪"):
+                    st.write( st.context.cookies )
+                    st.write( st.context.headers )

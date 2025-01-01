@@ -1,5 +1,17 @@
 services:
 
+  mongodb:
+    container_name: spellingbee_mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:?Your .env file must have a MONGO_ROOT_USERNAME variable}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:?Your .env file must have a MONGO_ROOT_PASSWORD variable}
+      - MONGO_INITDB_DATABASE=spellingbee
+
   spellingbee_streamlit:
     container_name: SpellingBee
 
@@ -20,6 +32,8 @@ services:
       - PYTHONUNBUFFERED=1
       # Set DEBUG to 1 (in your .env file) if you want to see the logs
       - DEBUG=${DEBUG:-0}
+      # MongoDB connection
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME:?Your .env file must have a MONGO_ROOT_USERNAME variable}:${MONGO_ROOT_PASSWORD:?Your .env file must have a MONGO_ROOT_PASSWORD variable}@mongodb:27017/spellingbee?authSource=admin
 
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:${STREAMLIT_PORT}/_stcore/health"]
@@ -31,3 +45,6 @@ services:
 
     command: ["streamlit", "run", "run_streamlit.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
     # command: ["streamlit", "run", "run_streamlit.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--logger.level=debug"]
+
+volumes:
+  mongodb_data:

@@ -95,7 +95,7 @@ def login(need_root: bool = False):
             st.session_state.authenticator.logout(button_name=f":red[👋🏻 Logout] `{st.session_state.username}`")
 
             setup_user_id()
-            st.header("", divider="rainbow")
+            # st.header("", divider="rainbow")
 
         if need_root:
             if st.session_state.username == "root":
