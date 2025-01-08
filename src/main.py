@@ -4,7 +4,6 @@ from PIL import Image
 
 import streamlit as st
 
-# from src.common import cprint, Colors
 from src.interface import hide_markdown_header_links
 from src.pages import Pages
 from src.login import login
@@ -25,22 +24,8 @@ def cmp_header():
 
 
 
-# def log_rerun():
-#     ip_addr = st.context.headers.get('X-Forwarded-For', "?")
-#     user_agent = st.context.headers.get('User-Agent', "?")
-#     lang = st.context.headers.get('Accept-Language', "?")
-
-#     cprint(f"RUNNING for: {ip_addr} - {lang} - {user_agent}", Colors.YELLOW)
-
-
-
-
-
-
 
 def main_page():
-    # if os.getenv("DEBUG"):
-    #     log_rerun()
     cmp_header()
 
     if not login():

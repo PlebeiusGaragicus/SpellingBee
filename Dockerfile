@@ -19,15 +19,13 @@ COPY .env .env
 COPY run_streamlit.py run_streamlit.py
 COPY src src
 # COPY sites sites
-COPY auth.yaml auth.yaml
-
-EXPOSE 8567
+# COPY auth.yaml auth.yaml
 
 # Define the basic ENTRYPOINT, without specific arguments
 ENTRYPOINT ["streamlit", "run", "run_streamlit.py"]
 
 # Optionally, we can define a default CMD as fallback for flexibility
-CMD ["--server.port=8567", "--server.address=0.0.0.0", "--server.headless=true"]
+CMD ["--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
 
 
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health

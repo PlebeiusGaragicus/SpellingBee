@@ -6,11 +6,17 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - ./VOLUMES/mongodb_data:/data/db
+      - ./VOLUMES/mongodb_configdb:/data/configdb
+
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:?Your .env file must have a MONGO_ROOT_USERNAME variable}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:?Your .env file must have a MONGO_ROOT_PASSWORD variable}
       - MONGO_INITDB_DATABASE=spellingbee
+
+    restart: unless-stopped
+
+
 
   spellingbee_streamlit:
     container_name: SpellingBee
@@ -23,16 +29,14 @@ services:
       - "${STREAMLIT_PORT:?Your .env file must have a STREAMLIT_PORT variable}:8501"
 
     volumes:
-      # Map local files to the container for live updates (useful for development)
-      # TODO: should this be removed for production?  Likely...
       - ./src:/app/src
+      - ./auth.yaml:/app/auth.yaml
 
     environment:
       # Avoid output buffering; this line ensures that print() statements are sent directly to the terminal
       - PYTHONUNBUFFERED=1
       # Set DEBUG to 1 (in your .env file) if you want to see the logs
-      - DEBUG=${DEBUG:-0}
-      # MongoDB connection
+      - DEBUG=${DEBUG}
       - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME:?Your .env file must have a MONGO_ROOT_USERNAME variable}:${MONGO_ROOT_PASSWORD:?Your .env file must have a MONGO_ROOT_PASSWORD variable}@mongodb:27017/spellingbee?authSource=admin
 
     healthcheck:
@@ -44,7 +48,3 @@ services:
     restart: unless-stopped
 
     command: ["streamlit", "run", "run_streamlit.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
-    # command: ["streamlit", "run", "run_streamlit.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--logger.level=debug"]
-
-volumes:
-  mongodb_data:

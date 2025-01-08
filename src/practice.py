@@ -1,10 +1,8 @@
-import os
 import time
 import random
 
 import streamlit as st
 
-from src.login import login
 from src.database import get_db
 from src.schema import UserAttempt
 from src.speech import TTS
@@ -59,8 +57,8 @@ def choose_word():
     if not problems_to_show:
         problems_to_show = [problem for problem, _ in problems_with_accuracy]
 
-    if os.getenv("DEBUG"):
-        st.write(problems_to_show)
+    # if os.getenv("DEBUG"):
+    #     st.write(problems_to_show)
 
     # Select a random problem to show
     random_problem = random.choice(problems_to_show)
@@ -126,9 +124,6 @@ def change_score(correct):
 
 ###############################################
 def page():
-    if not login():
-        return
-
     st.header('🧠 :rainbow[Spelling practice]', divider="rainbow")
 
 
@@ -145,16 +140,27 @@ def page():
         guess = st.text_input('Type the word you hear:', key='word_input')
         if st.form_submit_button(':green[Submit]'):
             if guess.lower() == chosen_word():
+                # if st.session_state.given_up:
+                #     st.warning("Good practice!")
+                # else:
+                #     if st.session_state.failed_attempts < 2:
+                #         change_score(True)
+                #         st.toast("Correct!")
+                # choose_word()
+                # st.balloons()
+                # time.sleep(1)
+                # st.rerun()
                 if st.session_state.given_up:
                     st.warning("Good practice!")
+                    choose_word()
+                    st.rerun()
                 else:
-                    if st.session_state.failed_attempts < 2:
-                        change_score(True)
-                        st.toast("Correct!")
-                choose_word()
-                st.balloons()
-                time.sleep(1)
-                st.rerun()
+                    change_score(True)
+                    st.toast("Correct!")
+                    choose_word()
+                    st.balloons()
+                    time.sleep(1)
+                    st.rerun()
 
             else:
                 # STUDENT GOT IT WRONG
